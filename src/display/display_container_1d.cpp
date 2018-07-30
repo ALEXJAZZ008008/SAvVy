@@ -4,7 +4,7 @@
 #include <qwt_color_map.h>
 
 #include <QSettings>
-
+#include <qwt_plot_item.h>
 #include "stir/Array.h"
 
 Display_container_1d::Display_container_1d(int dims, QWidget *parent) :
@@ -13,8 +13,7 @@ Display_container_1d::Display_container_1d(int dims, QWidget *parent) :
     initialise();
 }
 
-Display_container_1d::Display_container_1d(const QVector<double>& x_data,
-                                           const QVector<double> & y_data, int dims, QWidget *parent) :
+Display_container_1d::Display_container_1d(const QVector<double>& x_data, const QVector<double> & y_data, int dims, QWidget *parent) :
     Display_container(dims, parent)
 {
     initialise();
@@ -42,6 +41,22 @@ Display_container_1d::Display_container_1d(const QVector<QVector< QVector<double
     set_display(_in);
 }
 
+std::shared_ptr< QVector<double> >  Display_container_1d::get_x_values() const
+{
+    if(x_data != nullptr)
+        return std::shared_ptr<QVector<double> >(new QVector<double>(*x_data));
+    else
+        return nullptr;
+}
+
+std::shared_ptr< QVector<double> >  Display_container_1d::get_y_values() const
+{
+    if(x_data != nullptr)
+        return std::shared_ptr<QVector<double> >(new QVector<double>(*data));
+    else
+        return nullptr;
+}
+
 Display_container_1d::Display_container_1d(const stir::Array<1, float>& _in, int row_size, int dims, QWidget *parent):
     Display_container(dims, parent)
 {
@@ -63,6 +78,10 @@ Display_container_1d::Display_container_1d(const  stir::Array<3, float>& _in, in
     set_display(_in);
 }
 
+size_t Display_container_1d::get_x_axis_size() const
+{
+    return static_cast<unsigned long>(x_data->size());
+}
 
 void Display_container_1d::initialise()
 {
@@ -79,9 +98,9 @@ void Display_container_1d::initialise()
 
     if(settings.contains("showAxisDefault"))
     {
-        //        bool state = settings.value("showAxisDefault").toBool();
-        //        this->enableAxis(QwtPlot::xBottom, state);
-        //        this->enableAxis(QwtPlot::yLeft, state);
+        bool state = settings.value("showAxisDefault").toBool();
+        this->enableAxis(QwtPlot::xBottom, state);
+        this->enableAxis(QwtPlot::yLeft, state);
     }
 
     min_value = new QVector<double>(1,100000);
@@ -90,8 +109,19 @@ void Display_container_1d::initialise()
 }
 
 void Display_container_1d::set_display(const QVector<double> & _x_array,
-                                       const QVector<double> & _y_array, bool symbols)
+                                       const QVector<double> & _y_array,
+                                       bool replace,int after, bool symbols, bool line)
 {
+
+    if (replace)
+    {
+        QList<QwtPlotItem* > items = this->itemList(QwtPlotItem::Rtti_PlotCurve);
+        if (after < items.size())
+            for (int i = after; i < items.size(); ++i)
+                items.at(i)->detach();
+        curve = new QwtPlotCurve();
+        curve->setPen(Qt::red,2);
+    }
     data = new QVector<double>(_y_array.size(), 0.0);
     savvy::copy_QVector<double>(_y_array, *data, (*min_value)[0], (*max_value)[0]);
 
@@ -105,11 +135,22 @@ void Display_container_1d::set_display(const QVector<double> & _x_array,
         curve->setSymbol( symbol );
     }
 
+    if (!line)
+    {
+        curve->setStyle(QwtPlotCurve::NoCurve);
+    }
+
     update_scene();
 }
 
 void Display_container_1d::set_display(const QVector<double> & _y_array)
 {
+    // to silence warning
+    if(_y_array.size())
+    {
+
+    }
+
     //    data = new QVector<double>(_y_array.size(), 0.0);
     //    savvy::copy_QVector<double>(_y_array, *data, (*min_value)[0], (*max_value)[0]);
 
@@ -118,6 +159,12 @@ void Display_container_1d::set_display(const QVector<double> & _y_array)
 
 void Display_container_1d::set_display(const QVector<double> & _array, int row_size)
 {
+    // to silence warning
+    if(row_size)
+    {
+
+    }
+
     data = new QVector<double>(_array.size(), 0.0);
     savvy::copy_QVector<double>(_array, *data, (*min_value)[0], (*max_value)[0]);
     calculate_x_axis();
@@ -134,6 +181,12 @@ void Display_container_1d::set_display(const QVector<QVector<double> >&  _array)
 
 void Display_container_1d::set_display(const QVector<QVector<QVector<double> > >&  _array)
 {
+    // to silence warning
+    if(_array.size())
+    {
+
+    }
+
     //    data = new QVector<double>(_array.size(), 0.0);
     //    savvy::serialize_QVector<double>(_array, *data, *min_value, *max_value);
     //    calculate_x_axis();
@@ -142,6 +195,12 @@ void Display_container_1d::set_display(const QVector<QVector<QVector<double> > >
 
 void Display_container_1d::set_display(const stir::Array<1, float>& _array, int _row_size)
 {
+    // to silence warning
+    if(_row_size)
+    {
+
+    }
+
     data = new QVector<double>(static_cast<int>(_array.size()), 0.0);
     savvy::Array1D_QVector1D(_array, *data, (*min_value)[0], (*max_value)[0]);
     data_offset = _array.get_min_index();
@@ -151,7 +210,7 @@ void Display_container_1d::set_display(const stir::Array<1, float>& _array, int 
 
 void Display_container_1d::set_display(const  stir::Array<2, float>& _array)
 {
-    data = new QVector<double>(_array.size()* _array[0].size(), 0.0);
+    data = new QVector<double>(static_cast<int>(_array.size() * _array[0].size()), 0.0);
     savvy::Array2D_QVector1D(_array, *data, (*min_value)[0], (*max_value)[0]);
     calculate_x_axis();
     update_scene();
@@ -159,7 +218,7 @@ void Display_container_1d::set_display(const  stir::Array<2, float>& _array)
 
 void Display_container_1d::set_display(const  stir::Array<3, float>& _array)
 {
-    data = new QVector<double>(_array.size()* _array[0].size() * _array[0][0].size(), 0.0);
+    data = new QVector<double>(static_cast<int>(_array.size() * _array[0].size() * _array[0][0].size()), 0.0);
     savvy::Array3D_QVector1D(_array, *data, (*min_value)[0], (*max_value)[0]);
     calculate_x_axis();
     update_scene();
@@ -167,6 +226,12 @@ void Display_container_1d::set_display(const  stir::Array<3, float>& _array)
 
 void Display_container_1d::set_display(void* _in)
 {
+    // to silence warning
+    if(_in)
+    {
+
+    }
+
     //    stir::Array<1, float>* tmp =
     //            static_cast<stir::Array<1, float>* >(_in);
 
@@ -192,7 +257,7 @@ void Display_container_1d::set_display(void* _in)
 }
 
 void Display_container_1d::set_sizes(
-        float _min_x, float  _max_x)
+        double _min_x, double  _max_x)
 {
     min_x = _min_x;
     max_x = _max_x;
@@ -201,6 +266,12 @@ void Display_container_1d::set_sizes(
 
 void Display_container_1d::update_scene(int i)
 {
+    // to silence warning
+    if(i)
+    {
+
+    }
+
     this->setAxisScale(QwtPlot::yLeft,
                        *std::min_element(data->constBegin(), data->constEnd()),
                        *std::max_element(data->constBegin(), data->constEnd()));
@@ -210,12 +281,6 @@ void Display_container_1d::update_scene(int i)
     this->replot();
 }
 
-void Display_container_1d::clear()
-{
-    data->clear();
-    x_data->clear();
-    data_offset = 0;
-}
 
 Display_container_1d::~Display_container_1d()
 {

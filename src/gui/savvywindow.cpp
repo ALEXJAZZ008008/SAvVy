@@ -27,7 +27,7 @@ SavvyWindow::SavvyWindow(QWidget *parent) :
     ui(new Ui::SavvyWindow)
 {
     ui->setupUi(this);
-    QSettings settings;
+    QSettings settings("settings", QSettings::IniFormat, this);
 
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     restoreState(settings.value("mainWindowState").toByteArray());
@@ -128,7 +128,12 @@ void SavvyWindow::on_actionOpen_triggered()
 
 bool SavvyWindow::open_file(const QString& fileName, bool _mute_open)
 {
-    int num_of_data = 1;
+
+    // to silence warning
+    if(num_of_data)
+    {
+
+    }
 
     std::shared_ptr <stir::ArrayInterface> tmp_sptr =
             pnl_workspace->open_array(fileName);
@@ -182,7 +187,7 @@ void SavvyWindow::updateGUI(QMdiSubWindow * activeSubWindow)
 
 }
 
-void SavvyWindow::focus_sub_window(QString _id)
+void SavvyWindow::focus_sub_window(QString _id) const
 {
     if (QMdiSubWindow *existing = findMdiChild(_id)) {
         ui->mdiArea->setActiveSubWindow(existing);
@@ -204,7 +209,7 @@ QMdiSubWindow *SavvyWindow::findMdiChild(const QString &_id) const
         if (QString::number(mdiChild->get_my_id()) == _id)
             return window;
     }
-    return 0;
+    return nullptr;
 
 }
 
@@ -212,6 +217,12 @@ bool SavvyWindow::append_to_mdi(Display_container *child,
                                 bool prepend_to_recent,
                                 bool minimized)
 {
+    // to silence warning
+    if(child || prepend_to_recent || minimized)
+    {
+
+    }
+
     //    QObject::connect(child, &Display_container::aboutToClose, this, &SavvyWindow::remove_from_mdi);
 
     //    ui->mdiArea->addSubWindow(child);
@@ -223,18 +234,28 @@ bool SavvyWindow::append_to_mdi(Display_container *child,
     //    else
     //        child->showMinimized();
 
-        return true;
+    return true;
 }
 
 bool SavvyWindow::append_to_mdi(Display_manager *child,
                                 bool prepend_to_recent,
-                                bool minimized)
+                                bool minimized) const
 {
+    // to silence warning
+    if(prepend_to_recent)
+    {
+
+    }
+
     QObject::connect(child, &Display_manager::aboutToClose, this, &SavvyWindow::remove_from_mdi);
 
     ui->mdiArea->addSubWindow(child);
     ui->mdiArea->setFocusPolicy(Qt::StrongFocus);
     pnl_displayed_files->appendToOpenedList(child);
+
+    if (prepend_to_recent &&
+            child->get_file_name().size() > 0)
+        prependToRecentFiles(child->get_file_name());
 
     if (!minimized)
         child->show();
@@ -315,6 +336,11 @@ void SavvyWindow::on_actionDuplicate_triggered()
     Display_container* active =
             qobject_cast<Display_container *>(ui->mdiArea->activeSubWindow()->widget());
 
+    // to silence warning
+    if(active)
+    {
+
+    }
 
     //    active->rename(result);
 
@@ -365,12 +391,12 @@ void SavvyWindow::create_docks()
     //    dc_right->setWidget(toolMan);
 
     dc_opened_files = new QDockWidget("Opened Files", this);
-    pnl_workspace = new Workspace(this);
+    pnl_workspace.reset(new Workspace(this));
     connect(ui->mdiArea, &QMdiArea::subWindowActivated,
-            pnl_workspace, &Workspace::updateGUI);
-    connect(pnl_workspace, &Workspace::display_current,
+            pnl_workspace.get(), &Workspace::updateGUI);
+    connect(pnl_workspace.get(), &Workspace::display_current,
             this, &SavvyWindow::display_array);
-    dc_opened_files->setWidget(pnl_workspace);
+    dc_opened_files->setWidget(pnl_workspace.get());
 
     dc_displayed_files = new QDockWidget("Displayed Files", this);
     pnl_displayed_files = new Panel_displayed_files(this);
@@ -469,7 +495,7 @@ void SavvyWindow::create_actions()
     ui->menuWindow->addAction(closeAllAct);
 }
 
-void SavvyWindow::tileSubWindowsVertically()
+void SavvyWindow::tileSubWindowsVertically() const
 {
     if (ui->mdiArea->subWindowList().isEmpty())
         return;
@@ -484,7 +510,7 @@ void SavvyWindow::tileSubWindowsVertically()
     }
 }
 
-void SavvyWindow::tileSubWindowsHorizontally()
+void SavvyWindow::tileSubWindowsHorizontally() const
 {
     if (ui->mdiArea->subWindowList().isEmpty())
         return;
@@ -499,7 +525,7 @@ void SavvyWindow::tileSubWindowsHorizontally()
     }
 }
 
-void SavvyWindow::shadeSubWindows()
+void SavvyWindow::shadeSubWindows() const
 {
     if (ui->mdiArea->subWindowList().isEmpty())
         return;
@@ -517,7 +543,7 @@ bool SavvyWindow::hasRecentFiles()
     return count > 0;
 }
 
-void SavvyWindow::prependToRecentFiles(const QString &fileName)
+void SavvyWindow::prependToRecentFiles(const QString &fileName) const
 {
     QSettings settings;
 
@@ -531,7 +557,7 @@ void SavvyWindow::prependToRecentFiles(const QString &fileName)
     setRecentFilesVisible(!recentFiles.isEmpty());
 }
 
-void SavvyWindow::setRecentFilesVisible(bool visible)
+void SavvyWindow::setRecentFilesVisible(bool visible) const
 {
     recentFileSubMenuAct->setVisible(visible);
     recentFileSeparator->setVisible(visible);
@@ -543,14 +569,13 @@ void SavvyWindow::updateRecentFileActions()
 
     const QStringList recentFiles = readRecentFiles(settings);
     const int count = qMin(int(MaxRecentFiles), recentFiles.size());
-    int i = 0;
-    for ( ; i < count; ++i) {
+    for (int i = 0; i < count; ++i) {
         const QString fileName = QFileInfo(recentFiles.at(i)).fileName();
         recentFileActs[i]->setText(tr("&%1 %2").arg(i + 1).arg(fileName));
         recentFileActs[i]->setData(recentFiles.at(i));
         recentFileActs[i]->setVisible(true);
     }
-    for ( ; i < MaxRecentFiles; ++i)
+    for (int i = 0; i < MaxRecentFiles; ++i)
         recentFileActs[i]->setVisible(false);
 }
 
@@ -639,38 +664,6 @@ void SavvyWindow::on_actionStart_GUI_tests_triggered()
 
     all_tests = test_display_array_3d();
 
-    //    all_tests = test_display_array_3d_in_1d_container();
-
-    //    all_tests = test_display_array_1d_in_2d_container();
-
-    //     all_tests = test_display_array_1d_in_3d_container();
-
-    //    //all_tests = ask(QString("Has the range of x axis reduced half? "));
-
-
-
-    //    //all_tests = ask(QString("Does the image look like a ripple? "));
-
-    //    all_tests = test_display_2d_data_alt();
-
-    //    //all_tests = ask(QString("Was this the same as the previous? "));
-
-    //    all_tests = test_display_2d_data_physical();
-
-    //    //all_tests = ask(QString("Has the range of the image reduced half? "));
-
-    //    all_tests = test_display_2d_data_alt_not_square();
-
-    //    //all_tests = ask(QString("Was this the same as the previous? "));
-
-    //    all_tests = test_display_2d_data_physical_not_square();
-
-    //    //all_tests = ask(QString("Has the range of the image reduced half? "));
-
-    //    all_tests = test_display_3d_data();
-
-    //    all_tests = test_display_3d_data_alt();
-
 }
 
 int SavvyWindow::ask(QString question)
@@ -730,8 +723,8 @@ bool SavvyWindow::create_test_2d_data()
     for (int i = test2->get_min_index(); i <= test2->get_max_index() ; ++i)
         for (int j = (*test2)[i].get_min_index(); j <= (*test2)[i].get_max_index() ; ++j)
         {
-            float f = sqrt(i*i + j*j);
-            if( f != 0)
+            float f = static_cast<float>(sqrt(i*i + j*j));
+            if( f != 0.0f)
                 (*test2)[i][j]  = sin(f) / f;
             else
                 (*test2)[i][j] = 1;
@@ -772,8 +765,8 @@ bool SavvyWindow::create_test_3d_data()
         for (int j = (*test5)[i].get_min_index(); j <= (*test5)[i].get_max_index() ; ++j)
             for (int k = (*test5)[i][j].get_min_index(); k <= (*test5)[i][j].get_max_index() ; ++k)
             {
-                float f = sqrt(i*i + k*k + j*j);
-                if( f != 0)
+                float f = static_cast<float>(sqrt(i*i + k*k + j*j));
+                if( f != 0.0f)
                     (*test5)[i][j][k] = sin(f) / f;
                 else
                     (*test5)[i][j][k] = 1;
@@ -936,7 +929,7 @@ bool SavvyWindow::test_display_array_3d_in_2d_container()
     //    disp->get_display()->set_display(*tmp);
     //    append_to_mdi(disp);
 
-        return true;
+    return true;
 }
 
 bool SavvyWindow::test_display_array_3d()
@@ -1214,6 +1207,8 @@ void SavvyWindow::loadPlugins()
 void SavvyWindow::populateMenus(QObject *plugin)
 {
     ExternalInterface *iProc = qobject_cast<ExternalInterface *>(plugin);
+    iProc->show_workspace_operations(true);
+    iProc->load_from_workspace(pnl_workspace);
     if (iProc)
         addToMenu(iProc, iProc->get_name(), ui->menuPlugins);
 }
@@ -1225,6 +1220,6 @@ void SavvyWindow::addToMenu(ExternalInterface *plugin, const QString text,
     QAction *action = new QAction(text, plugin);
     loaded_plugins.append(action);
 
-    connect(loaded_plugins.back(), SIGNAL(triggered()), plugin, SLOT(exec()));
+    connect(loaded_plugins.back(), SIGNAL(triggered()), plugin, SLOT(show()));
     menu->addAction(action);
 }
