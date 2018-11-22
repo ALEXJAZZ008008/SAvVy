@@ -40,7 +40,12 @@ option_with_default(CMAKE_BUILD_TYPE "Build type (Release or Debug)" Debug)
 option_with_default(CMAKE_INSTALL_LIBDIR "Directory to which libraries installed" lib)
 
 # Find the Qt components
-find_package(Qt5 COMPONENTS Core Gui Widgets Test REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Test REQUIRED)
+
+#Find Boost
+set(BOOST_ROOT CACHE PATH "root of Boost")
+find_package( Boost 1.36.0 REQUIRED )
+include_directories(${Boost_INCLUDE_DIRS})
 
 # gcc specific stuff
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -168,6 +173,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 add_library(savvy_gui)
 add_library(savvy_IO)
 add_library(savvy_display)
+add_library(savvy_tools)
 add_library(savvy_gui_tests)
 
 qt5_add_resources(PROJECT_RESOURCE resources.qrc)
@@ -176,7 +182,7 @@ include(src/CMakeLists.txt)
 
 add_executable(${PROJECT_NAME} main.cpp ${PROJECT_RESOURCE})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::Gui savvy_gui savvy_IO savvy_display savvy_gui_tests)
+target_link_libraries(${PROJECT_NAME} savvy_gui savvy_IO savvy_display savvy_tools savvy_gui_tests)
 
 if(ENABLE_TESTING)
 

@@ -12,18 +12,16 @@
 // GUI elements
 #include "src/gui/workspace.h"
 #include "src/gui/panel_displayed_files.h"
-#include "src/gui/panel_opened_file_controls.h"
+#include "src/gui/watchdog.h"
 #include "src/display/display_container.h"
+#include "src/display/ctrl_levels.h"
 #include "src/display/display_manager.h"
 #include "src/include/external_interface.h"
+#include "src/tools/ToolManager.h"
 
 namespace Ui {
 class SavvyWindow;
 }
-
-//namespace savvy {
-//class SavvyWindow;
-//}
 
 //!
 //! \brief The SavvyWindow class
@@ -63,15 +61,14 @@ private slots:
                        bool prepend_to_recent=false,
                        bool minimized = false);
 
-    bool append_to_mdi(Display_manager *child,
+    bool append_to_mdi(Display_manager *subWindow,
                        bool prepend_to_recent=false,
-                       bool minimized = false) const;
+                       bool minimized = false);
 
     void remove_from_mdi();
 
     void on_actionDuplicate_triggered();
 
-    void on_set_colormap(int _cm);
     /** @}*/
 
     /** \addtogroup GUI
@@ -85,6 +82,12 @@ private slots:
     /** @}*/
 
     void on_actionAbout_Plugins_triggered();
+
+    void on_actionWindow_Level_triggered();
+
+    bool on_actionSave_triggered();
+
+    void on_actionProcess_Stack_triggered();
 
 private:
 
@@ -111,7 +114,9 @@ private:
     //! \details This member holds an incremental number for  every window that
     //! opens in the life time of the current run. It can only go upwards, starting from
     //! 1.
-    quint16 next_window_id;
+    quint16 next_dataset_id;
+
+    quint32 next_display_id;
     //! The QMdiSubWindow which was previously active.
     DisplayInterface* previous_active;
 
@@ -144,41 +149,45 @@ private:
 
     void shadeSubWindows() const;
     //! QDockWidget witch will hold the ToolManager
-    QDockWidget* dc_tool_manager;
+    QDockWidget* dc_tool_manager = nullptr;
     //! QDockWidget for the Panel_opened_files
-    QDockWidget* dc_opened_files;
+    QDockWidget* dc_opened_files = nullptr;
 
-    QDockWidget* dc_displayed_files;
+    QDockWidget* dc_displayed_files = nullptr;
     //! QDockWidget for Panel_opened_file_controls
-    QDockWidget* dc_opened_file_controls;
+    QDockWidget* dc_opened_file_controls = nullptr;
 
-    QDockWidget* dc_contrast;
+    QDockWidget* dc_contrast = nullptr;
 
-    Panel_displayed_files* pnl_displayed_files;
+    Panel_displayed_files* pnl_displayed_files = nullptr;
 
-    std::shared_ptr<Workspace> pnl_workspace;
+    std::shared_ptr<Workspace> pnl_workspace = nullptr;
 
-    Panel_opened_file_controls* pnl_opened_file_controls;
+    std::shared_ptr<CTRL_Levels> ctrl_levels = nullptr;
 
-    QToolBar *toolBar;
+//    std::shared_ptr<ToolManager> toolMan = nullptr;
+
+    std::shared_ptr<WatchDog> watchdog = nullptr;
+
+    QToolBar *toolBar = nullptr;
 
     QAction *recentFileActs[MaxRecentFiles];
 
-    QAction *recentFileSeparator;
+    QAction *recentFileSeparator = nullptr;
 
-    QAction *recentFileSubMenuAct;
+    QAction *recentFileSubMenuAct = nullptr;
 
-    QAction *tileAct;
+    QAction *tileAct = nullptr;
 
-    QAction *cascadeAct;
+    QAction *cascadeAct = nullptr;
 
-    QAction *shadeAct;
+    QAction *shadeAct = nullptr;
 
-    QAction *closeAllAct;
+    QAction *closeAllAct = nullptr;
 
-    QAction *tileVerticalAct;
+    QAction *tileVerticalAct = nullptr;
 
-    QAction *tileHorizontalAct;
+    QAction *tileHorizontalAct = nullptr;
     /** @}*/
 
     /** \addtogroup Testing
