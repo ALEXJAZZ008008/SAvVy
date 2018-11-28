@@ -21,7 +21,7 @@ class Histogram_manager : public DisplayInterface
 
 public:
     explicit Histogram_manager(int _my_id, int _num_dim, QWidget *parent = nullptr);
-    ~Histogram_manager();
+    ~Histogram_manager() override;
 
     /** \addtogroup Setters
      *  @{
@@ -32,9 +32,9 @@ public:
 
     virtual void set_display(const QString& _inFIle);
 
-    virtual void set_no_controls(bool);
+    void set_no_controls(bool) override;
 
-    virtual void set_curve(const QVector<double> & _x_array,
+    void set_curve(const QVector<double> & _x_array,
                            const QVector<double> & _y_array,
                            bool replace = true, int after = 1,
                            bool symbols = false, bool line = false) override;
@@ -53,14 +53,16 @@ public:
 
     void setCutOff(const float& _n);
 
-    virtual std::shared_ptr< QVector<double> >  get_x_values() const override;
+    std::shared_ptr< QVector<double> >  get_x_values() const override;
 
-    virtual std::shared_ptr< QVector<double> >  get_y_values() const override;
+    std::shared_ptr< QVector<double> >  get_y_values() const override;
 
 private slots:
-    void on_spinBox_valueChanged(int arg1);
+    //! Never used
+    //void on_spinBox_valueChanged(int arg1);
 
-    void on_doubleSpinBox_valueChanged(double arg1);
+    //! Never used
+    //void on_doubleSpinBox_valueChanged(double arg1);
 
 public slots:
 

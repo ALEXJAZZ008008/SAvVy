@@ -67,7 +67,7 @@ public:
 
     virtual size_t get_x_axis_size() const override;
 
-    inline QSize get_default_size() const override
+    QSize get_default_size() const override
     {
         return QSize(row_size, 1);
     }

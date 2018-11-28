@@ -15,7 +15,7 @@ class DisplayInterface : public QWidget
     Q_OBJECT
 
 public:
-    inline explicit DisplayInterface(int _id, int _dims, QWidget *parent = nullptr):
+    explicit DisplayInterface(int _id, int _dims, QWidget *parent = nullptr):
         QWidget(parent),
         dims(_dims),
         my_id(_id)
@@ -31,7 +31,7 @@ public:
     /** \addtogroup Getters
      *  @{
      */
-    inline int get_num_dimensions() const
+    int get_num_dimensions() const
     {
         return dims;
     }
@@ -42,18 +42,18 @@ public:
 
     virtual shared_ptr< QVector<double> >  get_y_values() const = 0;
 
-    inline QString get_file_name() const
+    QString get_file_name() const
     {
         return fullFileName;
     }
 
-    inline shared_ptr<Display_container> get_display() const
+    shared_ptr<Display_container> get_display() const
     {
         return _display;
     }
 
     //! \return the unique (per session) id for this window
-    inline int get_my_id() const
+    int get_my_id() const
     {
         return my_id;
     }

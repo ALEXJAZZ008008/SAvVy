@@ -15,7 +15,7 @@
 class ColorMap
 {
 public:
-    inline explicit ColorMap(QString plugin_colormaps = "",
+    explicit ColorMap(QString plugin_colormaps = "",
                              QString default_colormap = ""):
         _plugin_colormaps(plugin_colormaps),
         _default_colormap(default_colormap)
@@ -37,7 +37,7 @@ public:
 
     }
 
-    inline explicit ColorMap(int set,
+    explicit ColorMap(int set,
                              QString plugin_colormaps = "",
                              QString default_colormap = ""):
         ColorMap(plugin_colormaps, default_colormap)
@@ -45,32 +45,29 @@ public:
         getColorMap(set);
     }
 
-    inline ~ColorMap()
-    {
-
-    }
+    ~ColorMap() = default;
 
     //! Get the list with all the available options
-    inline QStringList getColormapList()
+    QStringList getColormapList()
     {
         return my_list;
     }
 
     //! Set the active ColorMap by name
-    inline const QSharedPointer<QwtLinearColorMap> getColorMap(QString name) const
+    const QSharedPointer<QwtLinearColorMap> getColorMap(QString const & name) const
     {
         int index = my_list.indexOf(name);
 
         return getColorMap(index);
     }
 
-    inline const QSharedPointer<QwtLinearColorMap> getDefaultColorMap() const
+    const QSharedPointer<QwtLinearColorMap> getDefaultColorMap() const
     {
         return get_ColorMap(index_of_default_colormap);
     }
 
     //! Set the active ColorMap by index
-    inline const QSharedPointer<QwtLinearColorMap> getColorMap(int index) const
+    const QSharedPointer<QwtLinearColorMap> getColorMap(int index) const
     {
         switch (index)
         {
@@ -97,7 +94,7 @@ public:
 
     }
 
-    inline int load_plugins()
+    int load_plugins()
     {
 
         QStringList filter;
@@ -174,7 +171,7 @@ public:
     }
 
     //! Set Black - White grayscale
-    inline void set_BW()
+    void set_BW()
     {
         QSharedPointer<QwtLinearColorMap> tmp( new QwtLinearColorMap(Qt::black,
                                                                      Qt::white));
@@ -182,25 +179,25 @@ public:
         _data_pool.append(tmp);
     }
 
-    inline const QSharedPointer<QwtLinearColorMap> get_BW() const
+    const QSharedPointer<QwtLinearColorMap> get_BW() const
     {
         return _data_pool[0];
     }
 
     //! Set White - Black grayscale
-    inline void set_WB()
+    void set_WB()
     {
         QSharedPointer<QwtLinearColorMap> tmp( new QwtLinearColorMap(Qt::white,
                                                                      Qt::black));
 
         _data_pool.append(tmp);
     }
-    inline const QSharedPointer<QwtLinearColorMap> get_WB() const
+    const QSharedPointer<QwtLinearColorMap> get_WB() const
     {
         return _data_pool[1];
     }
     //! Set Jet, popular by old Matlab
-    inline void set_JET()
+    void set_JET()
     {
         QSharedPointer<QwtLinearColorMap> tmp( new QwtLinearColorMap(Qt::blue,
                                                                      Qt::red));
@@ -212,12 +209,12 @@ public:
         _data_pool.append(tmp);
     }
 
-    inline const QSharedPointer<QwtLinearColorMap> get_JET() const
+    const QSharedPointer<QwtLinearColorMap> get_JET() const
     {
         return _data_pool.at(3);
     }
     //! Set QWT default ColorMap
-    inline void set_qwt()
+    void set_qwt()
     {
         QSharedPointer<QwtLinearColorMap> tmp( new QwtLinearColorMap(Qt::darkCyan,
                                                                      Qt::red));
@@ -229,13 +226,13 @@ public:
         _data_pool.append(tmp);
     }
 
-    inline QSharedPointer<QwtLinearColorMap> get_qwt() const
+    QSharedPointer<QwtLinearColorMap> get_qwt() const
     {
         return _data_pool.at(2);
     }
 
     //! Set Extended Black Body ColorMap
-    inline QSharedPointer<QwtLinearColorMap> get_ColorMap(int index) const
+    QSharedPointer<QwtLinearColorMap> get_ColorMap(int index) const
     {
         if (index < _data_pool.size() &&
                 index >=0)
@@ -247,10 +244,10 @@ public:
     }
 
     //    //! Returns the first Color of the ColorMap
-    //    inline QColor get_background() const
+    //    QColor get_background() const
     //    { return background; }
     //    //! Returns the last Color of the ColorMap
-    //    inline QColor get_peak_color() const
+    //    QColor get_peak_color() const
     //    { return peak; }
 
 private:

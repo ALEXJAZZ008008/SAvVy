@@ -90,23 +90,23 @@ public:
 
     virtual QVector< double > * get_current_data() const;
 
-    inline unsigned long get_num_dimensions() const
+    unsigned long get_num_dimensions() const
     {
         return num_dim;
     }
     //! Show / hide axis
-    inline void enable_axis(bool state = true)
+    void enable_axis(bool state = true)
     {
         this->enableAxis(QwtPlot::xBottom, state);
         this->enableAxis(QwtPlot::yLeft, state);
     }
     //! True if the axis are shown
-    inline bool has_axis() const
+    bool has_axis() const
     {
         return this->axisEnabled(QwtPlot::xBottom) || this->axisEnabled(QwtPlot::yLeft);
     }
 
-    inline virtual QSize get_default_size() const = 0;
+    virtual QSize get_default_size() const = 0;
 
     virtual size_t get_x_axis_size() const = 0;
 
@@ -116,7 +116,7 @@ public:
 
     void clearAllPlotItems();
 
-    inline void setCOG(QPoint cog)
+    void setCOG(QPoint cog)
     {
         m_cog = cog;
         m_state = 0;

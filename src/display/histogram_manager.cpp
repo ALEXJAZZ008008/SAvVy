@@ -21,15 +21,17 @@ Histogram_manager::~Histogram_manager()
     delete ui;
 }
 
-void Histogram_manager::on_spinBox_valueChanged(int arg1)
+//! Never used
+/*void Histogram_manager::on_spinBox_valueChanged(int arg1)
 {
     _histogram->setNumBin_update(static_cast<const size_t>(arg1));
-}
+}*/
 
-void Histogram_manager::on_doubleSpinBox_valueChanged(double arg1)
+//! Never used
+/*void Histogram_manager::on_doubleSpinBox_valueChanged(double arg1)
 {
     _histogram->setCutOff_update(static_cast<float>(arg1));
-}
+}*/
 
 void Histogram_manager::set_display(void*_in)
 {

@@ -54,16 +54,16 @@ public:
      *  @{
      */
 
-    inline int get_min_index_h() const
+    int get_min_index_h() const
     {return offset_h; }
 
-    inline int get_max_index_h()
+    int get_max_index_h()
     {return offset_h + row_size;}
 
-    inline int get_min_index_v() const
+    int get_min_index_v() const
     {return offset_v;}
 
-    inline int get_max_index_v()
+    int get_max_index_v()
     {return offset_v + row_num; }
     /** @}*/
 

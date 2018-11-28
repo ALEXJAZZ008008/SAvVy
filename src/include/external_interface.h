@@ -12,24 +12,24 @@
 class ExternalInterface : public QDialog
 {
 public:
-    inline explicit ExternalInterface(QWidget *parent = nullptr) :
+    explicit ExternalInterface(QWidget *parent = nullptr) :
         QDialog(parent)
     {
 
     }
 
-    inline virtual ~ExternalInterface()
-    {
+    ~ExternalInterface() override = default;
 
-    }
+    virtual void link_workspace(std::shared_ptr<Workspace> ) = 0;
 
-    inline virtual void link_workspace(std::shared_ptr<Workspace> ) = 0;
     //! \obsolete
-    inline virtual void return_to_workspace(std::shared_ptr<Workspace> ) = 0;
+    //! Never used
+    //inline virtual void return_to_workspace(std::shared_ptr<Workspace> ) = 0;
 
-    inline virtual void show_workspace_operations(bool state) = 0;
+    //! Never used
+    //inline virtual void show_workspace_operations(bool state) = 0;
 
-    inline QString & get_name()
+    QString & get_name()
     {
         return m_name;
     }

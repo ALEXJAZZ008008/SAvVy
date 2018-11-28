@@ -32,7 +32,7 @@ public:
     /** \addtogroup Setters
      *  @{
      */
-    inline void set_file_name(QString _s)
+    void set_file_name(QString _s)
     {
         fullFileName = _s;
         this->setWindowTitle(_s);
@@ -58,13 +58,13 @@ public:
     void set_no_controls(bool _f) override;
 
     //! Set the Colormap of choise
-    inline void set_color_map(const QSharedPointer<QwtLinearColorMap> i)
+    void set_color_map(const QSharedPointer<QwtLinearColorMap> i)
     {
         _display->set_color_map(i);
     }
     /** @}*/
 
-    inline QString get_label(int _page, int num_pages)
+    QString get_label(int _page, int num_pages)
     {
         return QString::number(_page) + " / " + QString::number(num_pages);
     }

@@ -19,7 +19,7 @@ class Display_container_raster : public Display_container
 public:
     explicit Display_container_raster(int dims, QWidget *parent = nullptr);
 
-    inline void set_color_map(const QSharedPointer<QwtColorMap> cm) override
+    void set_color_map(const QSharedPointer<QwtColorMap> cm) override
     {
         if(cm != nullptr)
         {
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    inline QSize get_default_size() const override
+    QSize get_default_size() const override
     {
         return  QSize(row_num, row_size);
     }
